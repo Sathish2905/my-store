@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, Category, CartItem, WishlistItem } from '../types';
 
-interface StoreContextType {
+export interface StoreContextType {
   products: Product[];
   categories: Category[];
   cart: CartItem[];
@@ -14,6 +14,9 @@ interface StoreContextType {
   toggleWishlist: (productId: string) => void;
   addCategory: (name: string) => void;
   addSubCategory: (categoryId: string, name: string) => void;
+  deleteCategory: (id: string) => void;
+  deleteSubCategory: (categoryId: string, subCategoryId: string) => void;
+  setSearchQuery: (query: string) => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -78,6 +81,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const stored = localStorage.getItem('wishlist');
     return stored ? JSON.parse(stored) : [];
   });
+
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     localStorage.setItem('products', JSON.stringify(products));
@@ -151,6 +156,20 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
+  const deleteCategory = (id: string) => {
+    setCategories(categories.filter((cat) => cat.id !== id));
+  };
+
+  const deleteSubCategory = (categoryId: string, subCategoryId: string) => {
+    setCategories(
+      categories.map((cat) =>
+        cat.id === categoryId
+          ? { ...cat, subCategories: cat.subCategories.filter((sub) => sub.id !== subCategoryId) }
+          : cat
+      )
+    );
+  };
+
   return (
     <StoreContext.Provider
       value={{
@@ -166,6 +185,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         toggleWishlist,
         addCategory,
         addSubCategory,
+        deleteCategory,
+        deleteSubCategory,
+        setSearchQuery,
       }}
     >
       {children}

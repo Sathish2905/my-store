@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { useStore } from '../context/StoreContext';
-import { Plus, Upload, Image as ImageIcon } from 'lucide-react';
+import { Plus, Upload, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { uploadImage } from '../utils/firebase';
 import toast from 'react-hot-toast';
 
 export function Admin() {
-  const { products, categories, addProduct, deleteProduct, addCategory, addSubCategory } = useStore();
+  const { products, categories, addProduct, deleteProduct, addCategory, addSubCategory, deleteCategory, deleteSubCategory } = useStore();
   const [newCategory, setNewCategory] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [newSubCategory, setNewSubCategory] = useState('');
@@ -78,7 +78,7 @@ export function Admin() {
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Category Form */}
         <div className="bg-white p-6 rounded-lg shadow space-y-4">
@@ -232,6 +232,62 @@ export function Admin() {
         </div>
       </div>
 
+      {/* Categories and Subcategories Table */}
+      <div className="bg-white p-6 rounded-lg shadow mt-8">
+        <h2 className="text-xl font-semibold mb-4">Categories and Subcategories</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Category
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Subcategories
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {categories.map((category) => (
+                <tr key={category.id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{category.name}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <ul className="list-disc list-inside">
+                      {category.subCategories.map((subCategory) => (
+                        <li key={subCategory.id} className="text-sm text-gray-500 flex justify-between items-center mb-1">
+                          <span>{subCategory.name}</span>
+                          <button
+                            onClick={() => deleteSubCategory(category.id, subCategory.id)}
+                            className="text-red-600 hover:text-red-900"
+                            title="Delete Subcategory"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button
+                      onClick={() => deleteCategory(category.id)}
+                      className="text-red-600 hover:text-red-900"
+                      title="Delete Category"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* Products Table */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-semibold mb-4">Products</h2>
@@ -285,8 +341,9 @@ export function Admin() {
                     <button
                       onClick={() => deleteProduct(product.id)}
                       className="text-red-600 hover:text-red-900"
+                      title="Delete Product"
                     >
-                      Delete
+                      <Trash2 className="h-5 w-5" />
                     </button>
                   </td>
                 </tr>
