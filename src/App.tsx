@@ -33,15 +33,12 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
-  const { user } = useAuth();
-
   return (
     <BrowserRouter>
       <AuthProvider>
         <StoreProvider>
           <div className="min-h-screen bg-gray-50">
             <Navbar />
-            {user && <CategoryNav />}
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
               <Routes>
                 <Route path="/login" element={<Login />} />
